@@ -1,4 +1,5 @@
-import os, uuid
+import os
+import uuid
 
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -13,12 +14,13 @@ def fpg_for_customers_files(instance, filename):
 class Customer(models.Model):
 
     CT_CHOICES = (
-        ('Rent', 'Rent')
-        ('Pledge', 'Pledge')
+        ('Rent', 'Rent'),
+        ('Pledge', 'Pledge'),
         ('Sale', 'Sale')
     )
 
-    c_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    c_id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -37,8 +39,10 @@ class Customer(models.Model):
     contract_scan = models.FileField(upload_to=fpg_for_customers_files)
     grantees_letter_scan = models.FileField(upload_to=fpg_for_customers_files)
 
-    vehicle_info = models.ForeignKey('Vehicle', on_delete=models.CASCADE, related_name='customer')
-    apartment = models.ForeignKey('Apartment', on_delete=models.CASCADE, related_name='customer')
+    vehicle_info = models.ForeignKey(
+        'Vehicle', on_delete=models.CASCADE, related_name='customer')
+    apartment = models.ForeignKey(
+        'Apartment', on_delete=models.CASCADE, related_name='customer')
 
     def __str__(self):
         return f'{self.name} {self.last_name}, {self.job_title}, {self.phone_no}'
@@ -46,11 +50,13 @@ class Customer(models.Model):
 
 class Building(models.Model):
 
-    b_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=200) 
+    b_id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=200)
     no_of_apartments = models.IntegerField()
 
-    address = models.ForeignKey('Address', on_delete=models.CASCADE, related_name='building')
+    address = models.ForeignKey(
+        'Address', on_delete=models.CASCADE, related_name='building')
 
     def __str__(self):
         return f'{self.name}'
@@ -58,7 +64,8 @@ class Building(models.Model):
 
 class Address(models.Model):
 
-    a_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    a_id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     province = models.CharField(max_length=200)
     district = models.CharField(max_length=200)
     region = models.CharField(max_length=200)
@@ -67,6 +74,7 @@ class Address(models.Model):
     def __str__(self):
         return f'{self.street_address}, {self.region}, {self.district}, {self.province}'
 
+
 class Apartment(models.Model):
 
     S_CHOICES = (
@@ -74,16 +82,18 @@ class Apartment(models.Model):
         ('Free', 'Free')
     )
 
-    a_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    a_id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    apartment_no = models.CharField(max_length=200) 
+    apartment_no = models.CharField(max_length=200)
     floor_no = models.IntegerField()
     no_of_rooms = models.IntegerField()
     no_of_toilets = models.IntegerField()
     status = models.CharField(max_length=200, choices=S_CHOICES)
 
-    building = models.ForeignKey('Building', on_delete=models.CASCADE, related_name='apartment')
+    building = models.ForeignKey(
+        'Building', on_delete=models.CASCADE, related_name='apartment')
 
     def __str__(self):
         return f'Apartment No: {self.apartment_no}, Status: {self.status}'
@@ -91,14 +101,15 @@ class Apartment(models.Model):
 
 class Vehicle(models.Model):
 
-    v_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    model = models.CharField(max_length=200) 
+    v_id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
+    model = models.CharField(max_length=200)
     plate_no = models.CharField(max_length=20)
-    color = models.CharField(max_length=200) 
+    color = models.CharField(max_length=200)
     year = models.CharField(max_length=4)
 
     def __str__(self):
-        return f'{self.model}, {self.color}, {self.plate_no}'  
+        return f'{self.model}, {self.color}, {self.plate_no}'
 
 
 class Income(models.Model):
@@ -112,35 +123,39 @@ class Income(models.Model):
         ('Repair', 'Repair'),
     )
 
-    i_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    i_id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    payment_month = models.CharField(max_length=200) 
-    payment_type = models.CharField(max_length=200, choices=P_CHOICES) 
-    amount = model.IntegerField()
-    
-    apartment = models.ForeignKey('Apartment', on_delete=models.CASCADE, related_name='income')
+    payment_month = models.CharField(max_length=200)
+    payment_type = models.CharField(max_length=200, choices=P_CHOICES)
+    amount = models.IntegerField()
+
+    apartment = models.ForeignKey(
+        'Apartment', on_delete=models.CASCADE, related_name='income')
 
     def __str__(self):
         return f'{self.amount}, {self.apartment.apartment_no}, {self.payment_month}, {self.payment_type}'
 
 
-class Expense(model.Models):
+class Expense(models.Model):
 
-    e_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    e_id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=600)
-    amount = model.IntegerField()
+    amount = models.IntegerField()
 
     def __str__(self):
         return f'{self.description}, {self.amount}'
 
 
-class CashPickup(model.Models):
+class CashPickup(models.Model):
 
-    e_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    e_id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=600)
-    amount = model.IntegerField()
+    amount = models.IntegerField()
 
     def __str__(self):
         return f'{self.description}, {self.amount}'
@@ -167,12 +182,14 @@ class Employee(models.Model):
 
 class Payroll(models.Model):
 
-    p_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    p_id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=600)
-    amount = model.IntegerField()
-    
-    employee = models.ForeignKey('Employee', on_delete=models.CASCADE, related_name='payroll')
+    amount = models.IntegerField()
+
+    employee = models.ForeignKey(
+        'Employee', on_delete=models.CASCADE, related_name='payroll')
 
     def __str__(self):
         return f'{self.employee.name}, {self.employee.job_title}, {self.amount}, {self.description}'
