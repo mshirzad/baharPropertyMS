@@ -3,6 +3,7 @@ import uuid
 
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.conf import settings
 
 
 def fpg_for_customers_files(instance, filename):
@@ -40,7 +41,7 @@ class Customer(models.Model):
     grantees_letter_scan = models.FileField(upload_to=fpg_for_customers_files)
 
     vehicle_info = models.ForeignKey(
-        'Vehicle', on_delete=models.CASCADE, related_name='customer')
+        'Vehicle', on_delete=models.CASCADE, related_name='customer', null=True, blank=True)
     apartment = models.ForeignKey(
         'Apartment', on_delete=models.CASCADE, related_name='customer')
 
@@ -57,6 +58,9 @@ class Building(models.Model):
 
     address = models.ForeignKey(
         'Address', on_delete=models.CASCADE, related_name='building')
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE, related_name='building')
 
     def __str__(self):
         return f'{self.name}'
@@ -94,6 +98,9 @@ class Apartment(models.Model):
 
     building = models.ForeignKey(
         'Building', on_delete=models.CASCADE, related_name='apartment')
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE, related_name='apartment')
 
     def __str__(self):
         return f'Apartment No: {self.apartment_no}, Status: {self.status}'
